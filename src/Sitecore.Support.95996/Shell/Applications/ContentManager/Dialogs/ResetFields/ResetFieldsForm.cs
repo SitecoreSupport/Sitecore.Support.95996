@@ -9,12 +9,19 @@ namespace Sitecore.Support.Shell.Applications.ContentManager.Dialogs.ResetFields
         protected override void OnLoad(EventArgs e)
         {
             Assert.ArgumentNotNull(e, "e");
-            base.OnLoad(e);
-            if (!Context.ClientPage.IsEvent)
+            bool renderCollapsedSections = UserOptions.ContentEditor.RenderCollapsedSections;
+            try
             {
-                base.OK.ToolTip = Translate.Text("Reset the field values on this page.");
-                Item itemFromQueryString = UIUtil.GetItemFromQueryString(Context.ContentDatabase);
-                RenderEditor(itemFromQueryString, itemFromQueryString, this.Fields);
+                UserOptions.ContentEditor.RenderCollapsedSections = true;
+                base.OnLoad(e);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex.ToString(), this);
+            }
+            finally
+            {
+                UserOptions.ContentEditor.RenderCollapsedSections = renderCollapsedSections;
             }
         }
     }
